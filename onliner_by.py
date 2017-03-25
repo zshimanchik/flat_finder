@@ -16,28 +16,28 @@ def file_cached(func):
 
 
 class OnlinerCrawler:
-    def __init__(self, timezone=None, fetch_delay=1):
-        self.tz = timezone if timezone is not None else datetime.timezone.utc
-        self.now = datetime.datetime.now(tz=self.tz)
-        self.fetch_delay = fetch_delay
-
-    def find(self, since):
+    def __init__(self, since, timezone=None, fetch_delay=1):
         """
         :param since: datetime parameter with timezone for example:
         >>> import datetime
         >>> tz = datetime.timezone(datetime.timedelta(hours=3))
         >>> since = datetime.datetime.now(tz=tz) - datetime.timedelta(days=3)
-        :return:
         """
+        self.tz = timezone if timezone is not None else datetime.timezone.utc
+        self.now = datetime.datetime.now(tz=self.tz)
+        self.fetch_delay = fetch_delay
+        self._since = since
+
+    def find(self):
         data = self.get()
-        for apartment in self.handle(data, since):
+        for apartment in self.handle(data, self._since):
             yield apartment
 
         last_page = self._get_last_page(data)
         for page in range(2, last_page):
             time.sleep(self.fetch_delay)
             data = self.get(page)
-            for apartment in self.handle(data, since):
+            for apartment in self.handle(data, self._since):
                 yield apartment
 
     # @file_cached
@@ -51,10 +51,10 @@ class OnlinerCrawler:
               "&rent_type[]=2_rooms" \
               "&rent_type[]=3_rooms" \
               "&rent_type[]=4_rooms" \
-              "&bounds[lb][lat]=53.931356875693545" \
-              "&bounds[lb][long]=27.67232894897461" \
-              "&bounds[rt][lat]=53.9471707599175" \
-              "&bounds[rt][long]=27.702369689941406" \
+              "&bounds[lb][lat]=53.92324551418698" \
+              "&bounds[lb][long]=27.635679244995117" \
+              "&bounds[rt][lat]=53.94684241751605" \
+              "&bounds[rt][long]=27.69576072692871" \
               "&page={page}".format(page=page)
 
         resp = requests.get(url)
@@ -99,5 +99,5 @@ if __name__ == "__main__":
     tz = datetime.timezone(datetime.timedelta(hours=3))
     since = datetime.datetime.now(tz=tz) - datetime.timedelta(hours=14)
 
-    cr = OnlinerCrawler()
-    cr.find(since=since)
+    cr = OnlinerCrawler(since, timezone=tz)
+    cr.find()
