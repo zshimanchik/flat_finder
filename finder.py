@@ -3,6 +3,7 @@ import logging.config
 import os
 import pickle
 
+import neagent
 import settings
 from onliner_by import OnlinerCrawler
 from telegram_notifier import TelegramNotifier
@@ -13,29 +14,31 @@ SINCE_FILENAME = os.path.join(settings.BASE_DIR, "last_search.dmp")
 
 
 def find():
-    since = get_since()
     notifier = TelegramNotifier(settings.TELEGRAM_BOT_TOKEN, settings.TELEGRAM_CHAT_ID)
 
-    onliner = OnlinerCrawler(since=since, timezone=settings.TIMEZONE)
-    LOGGER.info("searching since {}".format(since))
-    for apartment in onliner.find():
-        LOGGER.debug(apartment)
-        LOGGER.debug("=======")
-        notifier.notify(str(apartment))
+    since = get_since()
+    crawlers = [
+        OnlinerCrawler(since=since, timezone=settings.TIMEZONE),
+        neagent.Neagent(),
+    ]
 
-    save_since()
+    for crawler in crawlers:
+        LOGGER.info("searching using crawler: {}".format(crawler.__class__.__name__))
+        for apartment in crawler.find():
+            LOGGER.debug(apartment)
+            LOGGER.debug("=======")
+            notifier.notify(str(apartment))
 
 
 def get_since():
     if os.path.exists(SINCE_FILENAME):
-        return pickle.load(open(SINCE_FILENAME, 'rb'))
+        since = pickle.load(open(SINCE_FILENAME, 'rb'))
     else:
-        return datetime.datetime.now(tz=settings.TIMEZONE) - datetime.timedelta(hours=48)
+        since = datetime.datetime.now(tz=settings.TIMEZONE) - datetime.timedelta(hours=48)
 
-
-def save_since():
     now = datetime.datetime.now(tz=settings.TIMEZONE)
     pickle.dump(now, open(SINCE_FILENAME, 'wb'))
+    return since
 
 
 if __name__ == '__main__':
