@@ -1,11 +1,11 @@
-from onliner_by import OnlinerCrawler
 import datetime
-import settings
-from telegram_notifier import TelegramNotifier
-import pickle
-import os
-import logging
 import logging.config
+import os
+import pickle
+
+import settings
+from onliner_by import OnlinerCrawler
+from telegram_notifier import TelegramNotifier
 
 logging.config.dictConfig(settings.LOGGER)
 LOGGER = logging.getLogger(__name__)
@@ -16,9 +16,9 @@ def find():
     since = get_since()
     notifier = TelegramNotifier(settings.TELEGRAM_BOT_TOKEN, settings.TELEGRAM_CHAT_ID)
 
-    cr = OnlinerCrawler(timezone=settings.TIMEZONE)
+    onliner = OnlinerCrawler(since=since, timezone=settings.TIMEZONE)
     LOGGER.info("searching since {}".format(since))
-    for apartment in cr.find(since):
+    for apartment in onliner.find():
         LOGGER.debug(apartment)
         LOGGER.debug("=======")
         notifier.notify(str(apartment))
@@ -30,7 +30,7 @@ def get_since():
     if os.path.exists(SINCE_FILENAME):
         return pickle.load(open(SINCE_FILENAME, 'rb'))
     else:
-        return datetime.datetime.now(tz=settings.TIMEZONE) - datetime.timedelta(hours=24)
+        return datetime.datetime.now(tz=settings.TIMEZONE) - datetime.timedelta(hours=48)
 
 
 def save_since():
@@ -40,4 +40,3 @@ def save_since():
 
 if __name__ == '__main__':
     find()
-    # LOGGER.debug("oloo")
