@@ -1,0 +1,5 @@
+/.idea
+/exceptions.json
+/last_search.dmp
+__pycache__
+*.pyc
