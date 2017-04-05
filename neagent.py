@@ -51,7 +51,7 @@ class Neagent:
         resp.raise_for_status()
         page = lxml.html.fromstring(resp.text)
 
-        ads = page.xpath("//div[contains(@class, 'sect_body')]/div[contains(@class, 'imd')]")
+        ads = page.xpath("//div[contains(@class, 'sect_body')]/div[contains(@class, 'imd') and not(contains(@class, 'typevip'))]")
         if not ads:
             raise StopIteration()
 
