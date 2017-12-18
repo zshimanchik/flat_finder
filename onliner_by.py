@@ -42,20 +42,21 @@ class OnlinerCrawler:
 
     # @file_cached
     def get(self, page=1):
-        url = "https://ak.api.onliner.by/search/apartments?" \
-              "only_owner=true" \
-              "&price[min]=50" \
-              "&price[max]=320" \
-              "&currency=usd" \
-              "&rent_type[]=1_room" \
-              "&rent_type[]=2_rooms" \
-              "&rent_type[]=3_rooms" \
-              "&rent_type[]=4_rooms" \
-              "&bounds[lb][lat]=53.92324551418698" \
-              "&bounds[lb][long]=27.635679244995117" \
-              "&bounds[rt][lat]=53.94684241751605" \
-              "&bounds[rt][long]=27.69576072692871" \
-              "&page={page}".format(page=page)
+        url = 'https://ak.api.onliner.by/search/apartments?' \
+              'rent_type[]=1_room' \
+              '&rent_type[]=2_rooms' \
+              '&rent_type[]=3_rooms' \
+              '&rent_type[]=4_rooms' \
+              '&rent_type[]=5_rooms' \
+              '&rent_type[]=6_rooms' \
+              '&price[min]=50' \
+              '&price[max]=360' \
+              '&currency=usd' \
+              '&bounds[lb][lat]=53.91938114522741' \
+              '&bounds[lb][long]=27.61342762602116' \
+              '&bounds[rt][lat]=53.95527321543165' \
+              '&bounds[rt][long]=27.699654453169547' \
+              '&page={page}'.format(page=page)
 
         resp = requests.get(url)
         resp.raise_for_status()
