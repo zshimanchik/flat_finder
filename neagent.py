@@ -11,12 +11,13 @@ from requests.exceptions import HTTPError
 import models
 
 LOGGER = logging.getLogger(__name__)
+BASE_DIR = os.path.dirname(__file__)
 
 
 class Neagent:
     url = 'http://neagent.by/board/minsk/?hasPhotos=1&catid=1&district=29&subdistrict=5,28&priceMax=350&currency=2'
     PAGE_SIZE = 13
-    EXCEPTIONS_FILE = 'exceptions.json'
+    EXCEPTIONS_FILE = os.path.join(BASE_DIR, 'exceptions.json')
     exceptions = []
     FETCH_DELAY = 1
 
