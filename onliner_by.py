@@ -81,7 +81,7 @@ class OnlinerCrawler:
         id = apartment['id']
         url = apartment['url']
         photo = apartment['photo']
-        created_at = parser.parse(apartment['created_at'])
+        created_at = parser.parse(apartment.get('last_time_up') or apartment['created_at'])
         price = apartment['price']['amount']
         if created_at > since:
             created = self._age_to_str(self.now - created_at)
